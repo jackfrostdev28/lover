@@ -55,7 +55,7 @@
   .title {
     position: fixed;
     top: 0; left: 0; right: 0;
-    z-index: 5;
+    z-index: 10;
     padding: clamp(20px, 4.5vw, 44px);
     text-align: center;
     pointer-events: none;
@@ -98,101 +98,18 @@
     box-shadow: 0 0 24px rgba(255, 100, 160, 0.25);
   }
 
-  /* ---------- 3D Heart stage ---------- */
+  /* ---------- 3D Character Stage ---------- */
   #stage {
     position: fixed; inset: 0;
     z-index: 2;
     display: grid;
     place-items: center;
-    perspective: 1200px;
-  }
-  #heart3d {
-    width: clamp(180px, 34vmin, 300px);
-    height: clamp(180px, 34vmin, 300px);
-    transform-style: preserve-3d;
-    animation: spin3d 14s linear infinite, beat 1.6s ease-in-out infinite;
-    position: relative;
-    cursor: pointer;
-  }
-  @keyframes spin3d {
-    from { transform: rotateY(0deg) rotateX(8deg); }
-    to   { transform: rotateY(360deg) rotateX(8deg); }
-  }
-  @keyframes beat {
-    0%, 100% { scale: 1; }
-    12%      { scale: 1.09; }
-    24%      { scale: 1; }
-    36%      { scale: 1.06; }
-    48%      { scale: 1; }
-  }
-  .layer {
-    position: absolute; inset: 0;
-    -webkit-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><path d='M50 88 C20 64 6 46 6 30 C6 16 17 8 28 8 C38 8 46 14 50 22 C54 14 62 8 72 8 C83 8 94 16 94 30 C94 46 80 64 50 88 Z'/></svg>") center / contain no-repeat;
-    mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><path d='M50 88 C20 64 6 46 6 30 C6 16 17 8 28 8 C38 8 46 14 50 22 C54 14 62 8 72 8 C83 8 94 16 94 30 C94 46 80 64 50 88 Z'/></svg>") center / contain no-repeat;
-    background: linear-gradient(135deg, #ff6f9f 0%, #ff4f86 40%, #d94fa0 100%);
-  }
-  .layer.shine {
-    background:
-      radial-gradient(60px 40px at 32% 28%, rgba(255,255,255,0.55), transparent 70%),
-      linear-gradient(135deg, #ff8fb8 0%, #ff5f95 45%, #e055b0 100%);
-  }
-  #heartGlow {
-    position: absolute; inset: -40%;
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(255, 95, 143, 0.35) 0%, transparent 65%);
-    animation: glowPulse 1.6s ease-in-out infinite;
-    pointer-events: none;
-    transform: translateZ(-60px);
-  }
-  @keyframes glowPulse {
-    0%, 100% { opacity: 0.7; scale: 1; }
-    30%      { opacity: 1;   scale: 1.12; }
-  }
-
-  /* ---------- Orbiting mini hearts ---------- */
-  #orbit {
-    position: absolute; inset: 0;
-    transform-style: preserve-3d;
-    animation: orbitSpin 9s linear infinite;
-    pointer-events: none;
-  }
-  @keyframes orbitSpin { from { transform: rotateY(0); } to { transform: rotateY(360deg); } }
-  .orb {
-    position: absolute;
-    top: 50%; left: 50%;
-    font-size: clamp(16px, 3vmin, 26px);
-    filter: drop-shadow(0 0 8px rgba(255, 140, 180, 0.9));
-    animation: orbBob 2.6s ease-in-out infinite;
-  }
-  @keyframes orbBob {
-    0%, 100% { translate: 0 0; }
-    50%      { translate: 0 -12px; }
-  }
-
-  /* ---------- Floating hearts rising ---------- */
-  .floatHeart {
-    position: fixed;
-    bottom: -8vh;
-    z-index: 3;
-    opacity: 0;
-    animation: rise var(--dur) linear infinite;
-    animation-delay: var(--delay);
-    filter: drop-shadow(0 0 10px rgba(255, 120, 170, 0.6));
-    pointer-events: none;
-    will-change: transform, opacity;
-  }
-  @keyframes rise {
-    0%   { transform: translateY(0) translateX(0) rotate(0deg); opacity: 0; }
-    8%   { opacity: var(--op); }
-    50%  { transform: translateY(-55vh) translateX(var(--sway)) rotate(14deg); }
-    90%  { opacity: var(--op); }
-    100% { transform: translateY(-115vh) translateX(calc(var(--sway) * -1)) rotate(-10deg); opacity: 0; }
   }
 
   /* ---------- Love message card ---------- */
   #loveCard {
     position: fixed;
-    z-index: 6;
+    z-index: 11;
     bottom: clamp(28px, 7vh, 90px);
     left: 50%;
     width: min(92vw, 620px);
@@ -223,9 +140,9 @@
     opacity: 0;
   }
 
-  /* ---------- Start overlay (enables audio on tap) ---------- */
+  /* ---------- Start overlay ---------- */
   #startOverlay {
-    position: fixed; inset: 0; z-index: 10;
+    position: fixed; inset: 0; z-index: 100;
     display: grid; place-items: center;
     background: rgba(16, 5, 12, 0.55);
     backdrop-filter: blur(6px);
@@ -254,7 +171,7 @@
   /* ---------- Burst hearts on tap ---------- */
   .burst {
     position: fixed;
-    z-index: 8;
+    z-index: 12;
     pointer-events: none;
     will-change: transform, opacity;
   }
@@ -263,29 +180,18 @@
 <body>
 
 <div id="bg"></div>
-
-<!-- twinkling stars -->
 <div id="stars"></div>
 
-<!-- title -->
 <div class="title">
   <h1>พี่แจ๊ค ♡ น้องแก้ม</h1>
   <div class="sub">ถึงคนที่เค้ารักที่สุดในสามโลก</div>
   <div class="badge">💍 ครบรอบ 5 ปี 7 เดือน 💗</div>
 </div>
 
-<!-- 3D heart -->
-<div id="stage">
-  <div id="heart3d">
-    <div id="heartGlow"></div>
-    <div id="layers"></div>
-    <div id="orbit"></div>
-  </div>
-</div>
+<div id="stage"></div>
 
 <div id="loveCard"></div>
 
-<!-- tap to start -->
 <div id="startOverlay">
   <div class="inner">
     <div class="big">💗</div>
@@ -293,39 +199,23 @@
   </div>
 </div>
 
-<script>
-(function () {
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+(async function () {
   'use strict';
 
-  /* ---------- Build 3D heart layers ---------- */
-  const LAYERS = 16, DEPTH = 4; // total depth = LAYERS*DEPTH
-  const layersEl = document.getElementById('layers');
-  layersEl.style.transformStyle = 'preserve-3d';
-  layersEl.style.position = 'absolute';
-  layersEl.style.inset = '0';
-  for (let i = 0; i < LAYERS; i++) {
-    const d = document.createElement('div');
-    d.className = 'layer' + (i === LAYERS - 1 ? ' shine' : '');
-    d.style.transform = 'translateZ(' + ((i - (LAYERS - 1) / 2) * DEPTH) + 'px)';
-    layersEl.appendChild(d);
-  }
-
-  /* ---------- Orbiting mini hearts ---------- */
-  const orbitEl = document.getElementById('orbit');
-  const orbitHearts = ['💗', '💖', '💎', '💝', '⭐', '💞'];
-  orbitHearts.forEach((h, i) => {
-    const o = document.createElement('div');
-    o.className = 'orb';
-    o.textContent = h;
-    const ang = (i / orbitHearts.length) * 360;
-    const radius = 46; // % of heart size
-    o.style.transform =
-      'rotateY(' + ang + 'deg) translateX(' + radius + 'vmin) rotateY(' + (-ang) + 'deg)';
-    o.style.animationDelay = (i * 0.4) + 's';
-    orbitEl.appendChild(o);
-  });
-
-  /* ---------- Twinkling stars ---------- */
+  /* ============================== 1. Background & UI Effects ============================== */
   const starsEl = document.getElementById('stars');
   for (let i = 0; i < 70; i++) {
     const s = document.createElement('div');
@@ -339,21 +229,6 @@
     starsEl.appendChild(s);
   }
 
-  /* ---------- Rising floating hearts ---------- */
-  for (let i = 0; i < 22; i++) {
-    const f = document.createElement('div');
-    f.className = 'floatHeart';
-    f.textContent = ['💗', '💖', '💞', '💕'][i % 4];
-    f.style.left = (Math.random() * 100) + 'vw';
-    f.style.fontSize = (12 + Math.random() * 22) + 'px';
-    f.style.setProperty('--dur', (9 + Math.random() * 10) + 's');
-    f.style.setProperty('--delay', (Math.random() * 12) + 's');
-    f.style.setProperty('--op', (0.25 + Math.random() * 0.5).toFixed(2));
-    f.style.setProperty('--sway', ((Math.random() - 0.5) * 120) + 'px');
-    document.body.appendChild(f);
-  }
-
-  /* ---------- Love messages loop ---------- */
   const loveCard = document.getElementById('loveCard');
   const messages = [
     'รักแก้มที่สุดในโลกเลยนะ ถึงจะดื้อไปหน่อย แต่ก็ไม่เคยคิดจะหยุดรักเลย... รอบนี้พี่ตั้งใจมองข้ามให้อีกที แต่น้องแก้มต้องน่ารักขึ้นแล้วนะ! 💗',
@@ -369,8 +244,6 @@
   function showLove() {
     const msg = messages[msgIdx % messages.length];
     msgIdx = (msgIdx + 1) % messages.length;
-
-    // fade the old message out first, then swap text and fade in
     loveCard.classList.remove('show');
     loveCard.classList.add('fade-out');
     setTimeout(() => {
@@ -378,20 +251,16 @@
       loveCard.classList.remove('fade-out');
       loveCard.classList.add('show');
     }, 650);
-
-    // reading time ~ Thai reading pace: 0.55s per 10 chars, min 7s, max 14s
     clearTimeout(hideTimer);
     const readTime = Math.min(14000, Math.max(7000, msg.length * 55));
     hideTimer = setTimeout(() => loveCard.classList.remove('show'), readTime);
   }
   (function loop() {
     showLove();
-    // schedule next message after this one finishes reading + fade
     const next = Math.min(14000, Math.max(7000, messages[msgIdx % messages.length].length * 55)) + 1400;
     setTimeout(loop, next);
   })();
 
-  /* ---------- Heart burst on tap ---------- */
   function burst(x, y, n) {
     for (let i = 0; i < (n || 14); i++) {
       const b = document.createElement('div');
@@ -401,12 +270,10 @@
       b.style.top = y + 'px';
       b.style.fontSize = (14 + Math.random() * 18) + 'px';
       document.body.appendChild(b);
-
       const dx = (Math.random() - 0.5) * 320;
       const dy = -(80 + Math.random() * 220);
       const rot = (Math.random() - 0.5) * 240;
       const dur = 900 + Math.random() * 700;
-
       b.animate([
         { transform: 'translate(-50%,-50%) translate(0,0) rotate(0deg) scale(0.6)', opacity: 1 },
         { transform: 'translate(-50%,-50%) translate(' + dx + 'px,' + dy + 'px) rotate(' + rot + 'deg) scale(1.1)', opacity: 0 }
@@ -415,39 +282,274 @@
     }
   }
 
-  document.addEventListener('pointerdown', (e) => {
-    burst(e.clientX, e.clientY);
-    startAudio();
+  /* ============================== 2. 3D Character (The AI 3D Part) ============================== */
+  const scene = new THREE.Scene();
+  // ใช้สีพื้นหลังแบบ Romantic Gradient แทน Texture เพื่อให้เนียนกับพื้นหลัง HTML
+  scene.background = null;
+
+  const camera = new THREE.PerspectiveCamera(40, innerWidth / innerHeight, 0.1, 100);
+  camera.position.set(0.4, 2.3, 6.8);
+
+  const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+  renderer.setSize(innerWidth, innerHeight);
+  renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.12;
+  document.getElementById('stage').appendChild(renderer.domElement);
+
+  const controls = new OrbitControls(camera, renderer.domElement);
+  controls.target.set(0, 1.85, 0);
+  controls.enableDamping = true;
+  controls.dampingFactor = 0.06;
+  controls.enablePan = false;
+  controls.minDistance = 3;
+  controls.maxDistance = 12;
+  controls.autoRotate = true;
+  controls.autoRotateSpeed = 1.4;
+
+  scene.add(new THREE.HemisphereLight(0xfff2e0, 0x8a7462, 0.9));
+  const key = new THREE.DirectionalLight(0xfff1dd, 2.6);
+  key.position.set(3, 6, 4);
+  key.castShadow = true;
+  key.shadow.mapSize.set(2048, 2048);
+  scene.add(key);
+  const fill = new THREE.DirectionalLight(0xffd9c4, 0.7);
+  fill.position.set(-4, 3, 3);
+  scene.add(fill);
+
+  // Textures for character
+  function makeDenimTexture() {
+    const c = document.createElement('canvas');
+    c.width = c.height = 256;
+    const x = c.getContext('2d');
+    x.fillStyle = '#93a9c9';
+    x.fillRect(0, 0, 256, 256);
+    for (let i = 0; i < 4000; i++) {
+      const px = Math.random() * 256, py = Math.random() * 256;
+      x.strokeStyle = Math.random() > 0.5 ? 'rgba(255,255,255,0.06)' : 'rgba(30,50,80,0.09)';
+      x.beginPath(); x.moveTo(px, py); x.lineTo(px + (Math.random() > 0.5 ? 3 : -3), py); x.stroke();
+    }
+    const t = new THREE.CanvasTexture(c);
+    t.wrapS = t.wrapT = THREE.RepeatWrapping;
+    t.repeat.set(2.5, 2.5);
+    t.colorSpace = THREE.SRGBColorSpace;
+    return t;
+  }
+  function makeGinghamTexture() {
+    const s = 128, c = document.createElement('canvas');
+    c.width = c.height = s;
+    const x = c.getContext('2d');
+    x.fillStyle = '#fff6f2';
+    x.fillRect(0, 0, s, s);
+    x.fillStyle = 'rgba(226,62,84,0.7)';
+    const stripe = s / 4, half = s / 8;
+    for (let i = 0; i < 4; i++) x.fillRect(i * stripe, 0, half, s);
+    for (let i = 0; i < 4; i++) x.fillRect(0, i * stripe, s, half);
+    const t = new THREE.CanvasTexture(c);
+    t.wrapS = t.wrapT = THREE.RepeatWrapping;
+    t.repeat.set(2, 2);
+    t.colorSpace = THREE.SRGBColorSpace;
+    return t;
+  }
+
+  const matSkin      = new THREE.MeshStandardMaterial({ color: 0xf6cfae, roughness: 0.55 });
+  const matSkinShade = new THREE.MeshStandardMaterial({ color: 0xf0bd97, roughness: 0.55 });
+  const matHair      = new THREE.MeshStandardMaterial({ color: 0x1b1519, roughness: 0.4, side: THREE.DoubleSide });
+  const matBrow      = new THREE.MeshStandardMaterial({ color: 0x241a14, roughness: 0.5 });
+  const matLip       = new THREE.MeshStandardMaterial({ color: 0xc22838, roughness: 0.3 });
+  const matBlush     = new THREE.MeshBasicMaterial({ color: 0xf2919f, transparent: true, opacity: 0.5 });
+  const matEyeWhite  = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.25 });
+  const matIris      = new THREE.MeshStandardMaterial({ color: 0x2e1a0e, roughness: 0.2 });
+  const matPupil     = new THREE.MeshBasicMaterial({ color: 0x120a06 });
+  const matShine     = new THREE.MeshBasicMaterial({ color: 0xffffff });
+  const matDenim     = new THREE.MeshStandardMaterial({ map: makeDenimTexture(), roughness: 0.85 });
+  const matDenimDark = new THREE.MeshStandardMaterial({ color: 0x6f86a8, roughness: 0.8 });
+  const matGingham   = new THREE.MeshStandardMaterial({ map: makeGinghamTexture(), roughness: 0.75 });
+  const matGold      = new THREE.MeshStandardMaterial({ color: 0xe0b64f, metalness: 0.85, roughness: 0.3 });
+  const matBerry     = new THREE.MeshStandardMaterial({ color: 0xe0324a, roughness: 0.35 });
+  const matLeaf      = new THREE.MeshStandardMaterial({ color: 0x3f9b4f, roughness: 0.5 });
+  const matSeed      = new THREE.MeshBasicMaterial({ color: 0xf7e3a1 });
+
+  function S(r, mat, x, y, z, sx = 1, sy = 1, sz = 1) {
+    const m = new THREE.Mesh(new THREE.SphereGeometry(r, 28, 20), mat);
+    m.position.set(x, y, z);
+    m.scale.set(sx, sy, sz);
+    return m;
+  }
+  function B(w, h, d, mat, x, y, z) {
+    const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat);
+    m.position.set(x, y, z);
+    return m;
+  }
+  function limb(a, b, r, mat) {
+    const dir = new THREE.Vector3().subVectors(b, a);
+    const len = dir.length();
+    const m = new THREE.Mesh(new THREE.CapsuleGeometry(r, len, 6, 14), mat);
+    m.position.copy(a).lerp(b, 0.5);
+    m.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), dir.normalize());
+    return m;
+  }
+  const V3 = (x, y, z) => new THREE.Vector3(x, y, z);
+
+  const character = new THREE.Group();
+  scene.add(character);
+
+  const body = new THREE.Group();
+  character.add(body);
+  body.add(S(0.62, matDenim, 0, 0.78, 0, 1.15, 1, 0.75));
+  body.add(S(0.33, matDenim, -0.64, 1.52, 0));
+  body.add(S(0.33, matDenim, 0.64, 1.52, 0));
+  const neck = new THREE.Mesh(new THREE.CylinderGeometry(0.24, 0.26, 0.4, 20), matSkin);
+  neck.position.set(0, 1.68, 0);
+  body.add(neck);
+  body.add(B(0.66, 1.05, 0.12, matGingham, 0, 0.95, 0.42));
+
+  const berry = new THREE.Group();
+  berry.add(S(0.095, matBerry, 0, 0, 0, 1, 1.15, 0.85));
+  const leaf = new THREE.Mesh(new THREE.ConeGeometry(0.055, 0.07, 8), matLeaf);
+  leaf.position.set(0, 0.12, 0);
+  berry.add(leaf);
+  const stem = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.012, 0.05, 6), matLeaf);
+  stem.position.set(0, 0.17, 0);
+  berry.add(stem);
+  [[0.03, 0.02], [-0.04, 0.05], [0.05, -0.05], [-0.02, -0.06], [0, 0.08], [-0.06, -0.01], [0.07, 0.03], [-0.05, 0.08]]
+    .forEach(([sx, sy]) => berry.add(S(0.012, matSeed, sx, sy, 0.075)));
+  berry.position.set(-0.2, 0.72, 0.5);
+  berry.rotation.z = 0.15;
+  body.add(berry);
+
+  const edgeL = B(0.05, 1.2, 0.06, matDenimDark, -0.36, 0.95, 0.44);
+  edgeL.rotation.y = 0.1;
+  const edgeR = B(0.05, 1.2, 0.06, matDenimDark, 0.36, 0.95, 0.44);
+  edgeR.rotation.y = -0.1;
+  body.add(edgeL, edgeR);
+  const collarL = B(0.36, 0.26, 0.08, matDenimDark, -0.3, 1.6, 0.38);
+  collarL.rotation.z = 0.45; collarL.rotation.x = -0.25;
+  const collarR = B(0.36, 0.26, 0.08, matDenimDark, 0.3, 1.6, 0.38);
+  collarR.rotation.z = -0.45; collarR.rotation.x = -0.25;
+  body.add(collarL, collarR);
+  [1.15, 0.8, 0.45].forEach(by => {
+    const btn = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 0.02, 16), matGold);
+    btn.position.set(0.36, by, 0.47);
+    btn.rotation.x = Math.PI / 2;
+    body.add(btn);
   });
 
-  /* ---------- Procedural romantic music (Web Audio, no files) ---------- */
-  let audioCtx = null, musicGain = null, musicTimer = null, musicPlaying = false;
+  body.add(limb(V3(-0.66, 1.5, 0), V3(-1.18, 1.8, 0.12), 0.19, matDenim));
+  body.add(limb(V3(-1.18, 1.8, 0.12), V3(-1.12, 2.28, 0.42), 0.16, matDenim));
+  body.add(limb(V3(-1.13, 2.24, 0.4), V3(-1.11, 2.36, 0.45), 0.18, matDenimDark));
+  const peaceHand = new THREE.Group();
+  peaceHand.add(S(0.14, matSkin, 0, 0, 0, 0.8, 1.05, 0.5));
+  peaceHand.add(limb(V3(-0.055, 0.1, 0), V3(-0.09, 0.38, 0), 0.042, matSkin));
+  peaceHand.add(limb(V3(0.05, 0.1, 0), V3(0.09, 0.4, 0), 0.042, matSkin));
+  peaceHand.add(limb(V3(0.085, 0.03, 0.02), V3(0.1, 0.02, 0.12), 0.04, matSkin));
+  peaceHand.add(limb(V3(0.03, 0.01, 0.03), V3(0.04, 0.0, 0.13), 0.038, matSkin));
+  peaceHand.add(limb(V3(-0.1, -0.06, 0.02), V3(-0.16, 0.04, 0.06), 0.042, matSkin));
+  peaceHand.position.set(-1.14, 2.44, 0.5);
+  peaceHand.rotation.set(-0.1, -0.15, -0.1);
+  body.add(peaceHand);
+  body.add(limb(V3(0.66, 1.5, 0), V3(0.92, 1.02, 0.1), 0.19, matDenim));
+  body.add(limb(V3(0.92, 1.02, 0.1), V3(0.84, 0.66, 0.3), 0.16, matDenim));
+  body.add(limb(V3(0.85, 0.7, 0.28), V3(0.83, 0.62, 0.33), 0.18, matDenimDark));
+  body.add(S(0.13, matSkin, 0.83, 0.58, 0.36));
 
-  const scale_ = [261.63, 293.66, 329.63, 349.23, 392.00, 440.00, 493.88, 523.25]; // C major
+  const headGroup = new THREE.Group();
+  headGroup.position.set(0, 2.45, 0);
+  character.add(headGroup);
+  headGroup.add(S(1, matSkin, 0, 0, 0, 0.98, 1, 0.94));
+  const hf = new THREE.Mesh(new THREE.SphereGeometry(1.16, 48, 24, 0, Math.PI, 0, 1.15), matHair);
+  const hb = new THREE.Mesh(new THREE.SphereGeometry(1.16, 48, 24, Math.PI, Math.PI, 0, 2.55), matHair);
+  headGroup.add(hf, hb);
+  headGroup.add(S(0.95, matHair, 0, -0.35, -0.3, 0.95, 0.92, 0.72));
+  const lL = S(1, matHair, -0.92, -0.45, 0.12, 0.3, 0.95, 0.5); lL.rotation.z = 0.08;
+  const lR = S(1, matHair, 0.92, -0.45, 0.12, 0.3, 0.95, 0.5); lR.rotation.z = -0.08;
+  headGroup.add(lL, lR);
+  const bL = S(1, matHair, -0.42, 0.4, 0.82, 0.5, 0.16, 0.28); bL.rotation.z = 0.55; bL.rotation.y = 0.3;
+  const bR = S(1, matHair, 0.42, 0.4, 0.82, 0.5, 0.16, 0.28); bR.rotation.z = -0.55; bR.rotation.y = -0.3;
+  headGroup.add(bL, bR);
+  headGroup.add(S(0.22, matHair, 0, 1.25, -0.08));
+  headGroup.add(S(0.17, matHair, 0.09, 1.13, -0.16));
+  headGroup.add(S(0.15, matHair, -0.1, 1.17, -0.02));
+  const gr = new THREE.Mesh(new THREE.TorusGeometry(0.15, 0.04, 12, 28), matGold);
+  gr.position.set(0, 1.05, -0.05); gr.rotation.x = 1.3;
+  headGroup.add(gr);
 
+  const eyeGroups = [];
+  function makeEye(sign) {
+    const g = new THREE.Group();
+    g.add(S(0.155, matEyeWhite, 0, 0, 0, 1, 0.85, 0.55));
+    g.add(S(0.095, matIris, 0, -0.005, 0.075, 1, 1, 0.55));
+    g.add(S(0.048, matPupil, 0, -0.005, 0.115, 1, 1, 0.5));
+    g.add(S(0.03, matShine, -0.035, 0.05, 0.14));
+    g.add(S(0.015, matShine, 0.03, -0.04, 0.13));
+    const lsh = new THREE.Mesh(new THREE.TorusGeometry(0.15, 0.022, 10, 24, Math.PI), matBrow);
+    lsh.position.set(0, 0.02, 0.1); g.add(lsh);
+    const wn = new THREE.Mesh(new THREE.ConeGeometry(0.028, 0.09, 8), matBrow);
+    wn.position.set(0.16 * sign, 0.06, 0.09); wn.rotation.z = -1.0 * sign; wn.scale.z = 0.4;
+    g.add(wn);
+    g.position.set(0.34 * sign, 0.05, 0.8); g.rotation.y = 0.38 * sign;
+    headGroup.add(g); eyeGroups.push(g); return g;
+  }
+  makeEye(-1); makeEye(1);
+  headGroup.add(limb(V3(-0.46, 0.33, 0.74), V3(-0.22, 0.36, 0.8), 0.032, matBrow));
+  headGroup.add(limb(V3(0.46, 0.33, 0.74), V3(0.22, 0.36, 0.8), 0.032, matBrow));
+  headGroup.add(S(0.07, matSkinShade, 0, -0.18, 0.9, 1, 0.85, 0.8));
+  headGroup.add(S(0.105, matLip, 0, -0.39, 0.86, 1.45, 0.75, 0.75));
+  headGroup.add(S(0.085, matLip, 0, -0.29, 0.87, 1.3, 0.55, 0.7));
+  headGroup.add(S(0.04, matLip, 0, -0.23, 0.9));
+  const blL = S(0.15, matBlush, -0.56, -0.18, 0.74, 1, 0.7, 0.3); blL.rotation.y = -0.6;
+  const blR = S(0.15, matBlush, 0.56, -0.18, 0.74, 1, 0.7, 0.3); blR.rotation.y = 0.6;
+  headGroup.add(blL, blR);
+  character.traverse(o => { if (o.isMesh) o.castShadow = true; });
+
+  /* ============================== 3. Interaction Logic ============================== */
+  function spawnCharacter(point) {
+    const clone = character.clone();
+    clone.position.copy(point).add(V3(0, 0.5, 0));
+    clone.scale.setScalar(0.5);
+    scene.add(clone);
+    setTimeout(() => {
+      scene.remove(clone);
+      clone.traverse(o => { if (o.isMesh) o.material.dispose(); });
+    }, 3000);
+  }
+
+  const raycaster = new THREE.Raycaster();
+  const pointerNDC = new THREE.Vector2();
+  let downPos = null;
+
+  renderer.domElement.addEventListener('pointerdown', e => { downPos = [e.clientX, e.clientY]; });
+  renderer.domElement.addEventListener('pointerup', e => {
+    if (!downPos) return;
+    const dx = e.clientX - downPos[0], dy = e.clientY - downPos[1];
+    downPos = null;
+    if (dx * dx + dy * dy > 25) return;
+    pointerNDC.set((e.clientX / innerWidth) * 2 - 1, -(e.clientY / innerHeight) * 2 + 1);
+    raycaster.setFromCamera(pointerNDC, camera);
+    const hit = raycaster.intersectObject(character, true)[0];
+    if (hit) spawnCharacter(hit.point);
+  });
+
+  /* ============================== 4. Audio & Overlays ============================== */
+  let audioCtx = null, musicGain = null, musicPlaying = false;
+  const scale_ = [261.63, 293.66, 329.63, 349.23, 392.00, 440.00, 493.88, 523.25];
   function playNote(freq, time, dur, type, gain) {
     const o = audioCtx.createOscillator();
     const g = audioCtx.createGain();
-    o.type = type;
-    o.frequency.value = freq;
+    o.type = type; o.frequency.value = freq;
     g.gain.setValueAtTime(0, time);
     g.gain.linearRampToValueAtTime(gain, time + 0.02);
     g.gain.exponentialRampToValueAtTime(0.001, time + dur);
     o.connect(g).connect(musicGain);
-    o.start(time);
-    o.stop(time + dur + 0.05);
+    o.start(time); o.stop(time + dur + 0.05);
   }
-
   function scheduleMusic() {
     if (!musicPlaying) return;
     const now = audioCtx.currentTime;
     const bpm = 86, beat = 60 / bpm;
-    const pattern = [
-      [0, 2, 4, 2],
-      [1, 3, 5, 3],
-      [2, 4, 6, 4],
-      [4, 3, 1, 3]
-    ];
+    const pattern = [[0, 2, 4, 2], [1, 3, 5, 3], [2, 4, 6, 4], [4, 3, 1, 3]];
     let t = now + 0.1;
     for (const bar of pattern) {
       for (let i = 0; i < 4; i++) {
@@ -459,9 +561,8 @@
       playNote(scale_[4], t, beat * 1.5, 'triangle', 0.03);
       t += beat * 1.5;
     }
-    musicTimer = setTimeout(scheduleMusic, (t - now) * 1000 + 50);
+    setTimeout(scheduleMusic, (t - now) * 1000 + 50);
   }
-
   function startAudio() {
     if (musicPlaying) return;
     try {
@@ -472,10 +573,9 @@
       musicGain.connect(audioCtx.destination);
       musicPlaying = true;
       scheduleMusic();
-    } catch (e) { /* audio not available — visual still works */ }
+    } catch (e) {}
   }
 
-  /* ---------- Start overlay ---------- */
   const overlay = document.getElementById('startOverlay');
   overlay.addEventListener('pointerdown', (e) => {
     e.stopPropagation();
@@ -483,8 +583,36 @@
     startAudio();
     burst(window.innerWidth / 2, window.innerHeight / 2, 24);
   }, { once: false });
+
+  /* ============================== 5. Animation Loop ============================== */
+  const clock = new THREE.Clock();
+  let nextBlink = 2.5, blinkT = -1;
+
+  renderer.setAnimationLoop(() => {
+    const dt = Math.min(clock.getDelta(), 0.05);
+    const t = clock.elapsedTime;
+    character.position.y = Math.sin(t * 1.3) * 0.02;
+    headGroup.rotation.z = 0.05 + Math.sin(t * 0.6) * 0.03;
+    peaceHand.rotation.z = -0.1 + Math.sin(t * 1.8) * 0.06;
+    if (t > nextBlink) { blinkT = 0; nextBlink = t + 2.5 + Math.random() * 3.5; }
+    if (blinkT >= 0) {
+      blinkT += dt;
+      const p = blinkT / 0.22;
+      const s = p >= 1 ? 1 : 1 - Math.sin(Math.min(p, 1) * Math.PI) * 0.92;
+      eyeGroups.forEach(g => { g.scale.y = s; });
+      if (p >= 1) { eyeGroups.forEach(g => { g.scale.y = 1; }); blinkT = -1; }
+    }
+    controls.update();
+    renderer.render(scene, camera);
+  });
+
+  window.addEventListener('resize', () => {
+    camera.aspect = innerWidth / innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(innerWidth, innerHeight);
+  });
+
 })();
 </script>
-
 </body>
 </html>

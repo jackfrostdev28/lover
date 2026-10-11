@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🍓 Strawberry Denim Girl — AI 3D</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 100%; height: 100%; overflow: hidden;
+    font-family: 'Leelawadee UI', 'Segoe UI', system-ui, sans-serif; }
+  canvas { display: block; }
+
+  #ui { position: fixed; inset: 0; pointer-events: none;
+    display: flex; flex-direction: column; justify-content: space-between;
+    align-items: center; padding: 18px; z-index: 10; }
+
+  .glass { background: rgba(255,255,255,0.55); backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.7); border-radius: 999px;
+    box-shadow: 0 4px 20px rgba(120, 70, 60, 0.15); }
+
+  #title { margin-top: 6px; padding: 10px 22px; font-size: 18px; font-weight: 700;
+    color: #8a2c3c; }
+  #title small { font-weight: 500; color: #b06a76; font-size: 13px; }
+
+  #bottom { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+  #hint { padding: 7px 18px; font-size: 13px; color: #7a5a50; }
+  #btns { display: flex; gap: 10px; }
+  #btns button { pointer-events: auto; cursor: pointer; border: none;
+    padding: 10px 20px; font-size: 14px; font-weight: 600; color: #8a2c3c;
+    font-family: inherit; transition: transform .12s ease, background .2s; }
+  #btns button:hover { transform: translateY(-2px); background: rgba(255,255,255,0.8); }
+
+  #loading { position: fixed; inset: 0; display: flex; align-items: center;
+    justify-content: center; font-size: 20px; font-weight: 600; color: #a05a68;
+    background: #f2e4d0; z-index: 20; text-align: center; line-height: 1.8; }
+</style>
+</head>
+<body>
+<div id="ui">
+  <div id="title" class="glass">🍓 Strawberry Denim Girl <small>• AI 3D Figure</small></div>
+  <div id="bottom">
+    <div id="hint" class="glass">🖱️ ลาก = หมุน &nbsp;•&nbsp; ล้อเมาส์ = ซูม &nbsp;•&nbsp; คลิกที่ตัวละคร = ตัวละคร 🎀</div>
+    <div id="btns">
+      <button id="rotateBtn" class="glass">⏸ หยุดหมุนอัตโนมัติ</button>
+      <button id="shotBtn" class="glass">📸 บันทึกภาพ PNG</button>
+    </div>
+  </div>
+</div>
+<div id="loading">🍓 กำลังโหลดโมเดล 3D…</div>
+
+<script>
+  window.__ok = false;
+  setTimeout(function () {
+    if (!window.__ok) {
+      document.getElementById('loading').innerHTML =
+        '⚠️ โหลดไลบรารี Three.js ไม่สำเร็จ<br>กรุณาเชื่อมต่ออินเทอร์เน็ต แล้วรีเฟรชหน้านี้';
+    }
+  }, 7000);
+</script>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+window.__ok = true;
+
+try {
+
+/* ============================== Setup ============================== */
+
+const scene = new THREE.Scene();
+scene.background = makeBackgroundTexture();
+
+const camera = new THREE.PerspectiveCamera(40, innerWidth / innerHeight, 0.1, 100);
+camera.position.set(0.4, 2.3, 6.8);
+
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setSize(innerWidth, innerHeight);
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.12;
+document.body.appendChild(renderer.domElement);
+
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.target.set(0, 1.85, 0);
+controls.enableDamping = true;
+controls.dampingFactor = 0.06;
+controls.enablePan = false;
+controls.minDistance = 3;
+controls.maxDistance = 12;
+controls.minPolarAngle = 0.25;
+controls.maxPolarAngle = 1.7;
+controls.autoRotate = true;
+controls.autoRotateSpeed = 1.4;
+
+/* ============================== Lights ============================== */
+
+scene.add(new THREE.HemisphereLight(0xfff2e0, 0x8a7462, 0.9));
+
+const key = new THREE.DirectionalLight(0xfff1dd, 2.6);
+key.position.set(3, 6, 4);
+key.castShadow = true;
+key.shadow.mapSize.set(2048, 2048);
+key.shadow.camera.left = key.shadow.camera.bottom = -4;
+key.shadow.camera.right = key.shadow.camera.top = 4;
+key.shadow.camera.near = 1;
+key.shadow.camera.far = 20;
+key.shadow.bias = -0.0005;
+scene.add(key);
+
+const fill = new THREE.DirectionalLight(0xffd9c4, 0.7);
+fill.position.set(-4, 3, 3);
+scene.add(fill);
+
+const rim = new THREE.DirectionalLight(0xbfd4ff, 1.1);
+rim.position.set(-3, 4, -4);
+scene.add(rim);
+
+/* Ground shadow catcher */
+const ground = new THREE.Mesh(
+  new THREE.CircleGeometry(4, 48),
+  new THREE.ShadowMaterial({ opacity: 0.16 })
+);
+ground.rotation.x = -Math.PI / 2;
+ground.position.y = -0.02;
+ground.receiveShadow = true;
+scene.add(ground);
+
+/* ============================== Textures ============================== */
+
+function makeBackgroundTexture() {
+  const c = document.createElement('canvas');
+  c.width = c.height = 512;
+  const x = c.getContext('2d');
+  const g = x.createLinearGradient(0, 0, 0, 512);
+  g.addColorStop(0, '#f4e6d2');
+  g.addColorStop(0.5, '#e2c7aa');
+  g.addColorStop(1, '#c9aa89');
+  x.fillStyle = g;
+  x.fillRect(0, 0, 512, 512);
+  for (let i = 0; i < 26; i++) {           // warm bokeh circles
+    const r = 20 + Math.random() * 70, px = Math.random() * 512, py = Math.random() * 512;
+    const rg = x.createRadialGradient(px, py, r * 0.1, px, py, r);
+    rg.addColorStop(0, 'rgba(255,246,232,0.22)');
+    rg.addColorStop(1, 'rgba(255,246,232,0)');
+    x.fillStyle = rg;
+    x.beginPath();
+    x.arc(px, py, r, 0, Math.PI * 2);
+    x.fill();
+  }
+  const t = new THREE.CanvasTexture(c);
+  t.colorSpace = THREE.SRGBColorSpace;
+  return t;
+}
+
+function makeDenimTexture() {
+  const c = document.createElement('canvas');
+  c.width = c.height = 256;
+  const x = c.getContext('2d');
+  x.fillStyle = '#93a9c9';
+  x.fillRect(0, 0, 256, 256);
+  for (let i = 0; i < 4000; i++) {          // fabric noise
+    const px = Math.random() * 256, py = Math.random() * 256;
+    x.strokeStyle = Math.random() > 0.5 ? 'rgba(255,255,255,0.06)' : 'rgba(30,50,80,0.09)';
+    x.beginPath();
+    x.moveTo(px, py);
+    x.lineTo(px + (Math.random() > 0.5 ? 3 : -3), py);
+    x.stroke();
+  }
+  x.strokeStyle = 'rgba(255,255,255,0.05)';  // twill diagonals
+  for (let i = -256; i < 256; i += 6) {
+    x.beginPath();
+    x.moveTo(i, 0);
+    x.lineTo(i + 256, 256);
+    x.stroke();
+  }
+  const t = new THREE.CanvasTexture(c);
+  t.wrapS = t.wrapT = THREE.RepeatWrapping;
+  t.repeat.set(2.5, 2.5);
+  t.colorSpace = THREE.SRGBColorSpace;
+  return t;
+}
+
+function makeGinghamTexture() {
+  const s = 128, c = document.createElement('canvas');
+  c.width = c.height = s;
+  const x = c.getContext('2d');
+  x.fillStyle = '#fff6f2';
+  x.fillRect(0, 0, s, s);
+  x.fillStyle = 'rgba(226,62,84,0.7)';
+  const stripe = s / 4, half = s / 8;
+  for (let i = 0; i < 4; i++) x.fillRect(i * stripe, 0, half, s);
+  for (let i = 0; i < 4; i++) x.fillRect(0, i * stripe, s, half);
+  const t = new THREE.CanvasTexture(c);
+  t.wrapS = t.wrapT = THREE.RepeatWrapping;
+  t.repeat.set(2, 2);
+  t.colorSpace = THREE.SRGBColorSpace;
+  return t;
+}
+
+/* ============================== Materials ============================== */
+
+const matSkin      = new THREE.MeshStandardMaterial({ color: 0xf6cfae, roughness: 0.55 });
+const matSkinShade = new THREE.MeshStandardMaterial({ color: 0xf0bd97, roughness: 0.55 });
+const matHair      = new THREE.MeshStandardMaterial({ color: 0x1b1519, roughness: 0.4, side: THREE.DoubleSide });
+const matBrow      = new THREE.MeshStandardMaterial({ color: 0x241a14, roughness: 0.5 });
+const matLip       = new THREE.MeshStandardMaterial({ color: 0xc22838, roughness: 0.3 });
+const matBlush     = new THREE.MeshBasicMaterial({ color: 0xf2919f, transparent: true, opacity: 0.5 });
+const matEyeWhite  = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.25 });
+const matIris      = new THREE.MeshStandardMaterial({ color: 0x2e1a0e, roughness: 0.2 });
+const matPupil     = new THREE.MeshBasicMaterial({ color: 0x120a06 });
+const matShine     = new THREE.MeshBasicMaterial({ color: 0xffffff });
+const matDenim     = new THREE.MeshStandardMaterial({ map: makeDenimTexture(), roughness: 0.85 });
+const matDenimDark = new THREE.MeshStandardMaterial({ color: 0x6f86a8, roughness: 0.8 });
+const matGingham   = new THREE.MeshStandardMaterial({ map: makeGinghamTexture(), roughness: 0.75 });
+const matGold      = new THREE.MeshStandardMaterial({ color: 0xe0b64f, metalness: 0.85, roughness: 0.3 });
+const matBerry     = new THREE.MeshStandardMaterial({ color: 0xe0324a, roughness: 0.35 });
+const matLeaf      = new THREE.MeshStandardMaterial({ color: 0x3f9b4f, roughness: 0.5 });
+const matSeed      = new THREE.MeshBasicMaterial({ color: 0xf7e3a1 });
+
+/* ============================== Helpers ============================== */
+
+function S(r, mat, x, y, z, sx = 1, sy = 1, sz = 1) {
+  const m = new THREE.Mesh(new THREE.SphereGeometry(r, 28, 20), mat);
+  m.position.set(x, y, z);
+  m.scale.set(sx, sy, sz);
+  return m;
+}
+function B(w, h, d, mat, x, y, z) {
+  const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat);
+  m.position.set(x, y, z);
+  return m;
+}
+function limb(a, b, r, mat) {
+  const dir = new THREE.Vector3().subVectors(b, a);
+  const len = dir.length();
+  const m = new THREE.Mesh(new THREE.CapsuleGeometry(r, len, 6, 14), mat);
+  m.position.copy(a).lerp(b, 0.5);
+  m.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), dir.normalize());
+  return m;
+}
+const V3 = (x, y, z) => new THREE.Vector3(x, y, z);
+
+/* ============================== Character ============================== */
+
+const character = new THREE.Group();
+scene.add(character);
+
+/* ---------- Body (denim jacket + gingham top) ---------- */
+
+const body = new THREE.Group();
+character.add(body);
+
+const torso = S(0.62, matDenim, 0, 0.78, 0, 1.15, 1, 0.75);
+body.add(torso);
+
+// shoulders
+body.add(S(0.33, matDenim, -0.64, 1.52, 0));
+body.add(S(0.33, matDenim, 0.64, 1.52, 0));
+
+// neck
+const neck = new THREE.Mesh(new THREE.CylinderGeometry(0.24, 0.26, 0.4, 20), matSkin);
+neck.position.set(0, 1.68, 0);
+body.add(neck);
+
+// gingham top panel (pokes out of the open jacket)
+const topPanel = B(0.66, 1.05, 0.12, matGingham, 0, 0.95, 0.42);
+body.add(topPanel);
+
+// strawberry pin
+const berry = new THREE.Group();
+berry.add(S(0.095, matBerry, 0, 0, 0, 1, 1.15, 0.85));
+const leaf = new THREE.Mesh(new THREE.ConeGeometry(0.055, 0.07, 8), matLeaf);
+leaf.position.set(0, 0.12, 0);
+berry.add(leaf);
+const stem = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.012, 0.05, 6), matLeaf);
+stem.position.set(0, 0.17, 0);
+berry.add(stem);
+[[0.03, 0.02], [-0.04, 0.05], [0.05, -0.05], [-0.02, -0.06], [0, 0.08], [-0.06, -0.01], [0.07, 0.03], [-0.05, 0.08]]
+  .forEach(([sx, sy]) => berry.add(S(0.012, matSeed, sx, sy, 0.075)));
+berry.position.set(-0.2, 0.72, 0.5);
+berry.rotation.z = 0.15;
+body.add(berry);
+
+// jacket front edges + collar flaps + buttons
+const edgeL = B(0.05, 1.2, 0.06, matDenimDark, -0.36, 0.95, 0.44);
+edgeL.rotation.y = 0.1;
+const edgeR = B(0.05, 1.2, 0.06, matDenimDark, 0.36, 0.95, 0.44);
+edgeR.rotation.y = -0.1;
+body.add(edgeL, edgeR);
+
+const collarL = B(0.36, 0.26, 0.08, matDenimDark, -0.3, 1.6, 0.38);
+collarL.rotation.z = 0.45; collarL.rotation.x = -0.25;
+const collarR = B(0.36, 0.26, 0.08, matDenimDark, 0.3, 1.6, 0.38);
+collarR.rotation.z = -0.45; collarR.rotation.x = -0.25;
+body.add(collarL, collarR);
+
+[1.15, 0.8, 0.45].forEach(by => {
+  const btn = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 0.02, 16), matGold);
+  btn.position.set(0.36, by, 0.47);
+  btn.rotation.x = Math.PI / 2;
+  body.add(btn);
+});
+
+/* ---------- Arms ---------- */
+
+// right arm (screen left) raised doing a peace sign ✌️
+body.add(limb(V3(-0.66, 1.5, 0), V3(-1.18, 1.8, 0.12), 0.19, matDenim));
+body.add(limb(V3(-1.18, 1.8, 0.12), V3(-1.12, 2.28, 0.42), 0.16, matDenim));
+const cuffR = limb(V3(-1.13, 2.24, 0.4), V3(-1.11, 2.36, 0.45), 0.18, matDenimDark);
+body.add(cuffR);
+
+const peaceHand = new THREE.Group();
+peaceHand.add(S(0.14, matSkin, 0, 0, 0, 0.8, 1.05, 0.5));            // palm
+const idx = limb(V3(-0.055, 0.1, 0), V3(-0.09, 0.38, 0), 0.042, matSkin);   // index up
+const mid = limb(V3(0.05, 0.1, 0), V3(0.09, 0.4, 0), 0.042, matSkin);       // middle up
+peaceHand.add(idx, mid);
+const ringF = limb(V3(0.085, 0.03, 0.02), V3(0.1, 0.02, 0.12), 0.04, matSkin);  // folded ring
+const pinkyF = limb(V3(0.03, 0.01, 0.03), V3(0.04, 0.0, 0.13), 0.038, matSkin); // folded pinky
+peaceHand.add(ringF, pinkyF);
+const thumb = limb(V3(-0.1, -0.06, 0.02), V3(-0.16, 0.04, 0.06), 0.042, matSkin);
+peaceHand.add(thumb);
+peaceHand.position.set(-1.14, 2.44, 0.5);
+peaceHand.rotation.set(-0.1, -0.15, -0.1);
+body.add(peaceHand);
+
+// left arm (screen right) relaxed down
+body.add(limb(V3(0.66, 1.5, 0), V3(0.92, 1.02, 0.1), 0.19, matDenim));
+body.add(limb(V3(0.92, 1.02, 0.1), V3(0.84, 0.66, 0.3), 0.16, matDenim));
+body.add(limb(V3(0.85, 0.7, 0.28), V3(0.83, 0.62, 0.33), 0.18, matDenimDark));
+body.add(S(0.13, matSkin, 0.83, 0.58, 0.36));   // hand tucked at hip
+
+/* ---------- Head ---------- */
+
+const headGroup = new THREE.Group();
+headGroup.position.set(0, 2.45, 0);
+character.add(headGroup);
+
+// skull
+headGroup.add(S(1, matSkin, 0, 0, 0, 0.98, 1, 0.94));
+
+// hair: front cap (stops above brows) + back cap (long bob) + volume
+const hairFront = new THREE.Mesh(new THREE.SphereGeometry(1.16, 48, 24, 0, Math.PI, 0, 1.15), matHair);
+const hairBack = new THREE.Mesh(new THREE.SphereGeometry(1.16, 48, 24, Math.PI, Math.PI, 0, 2.55), matHair);
+headGroup.add(hairFront, hairBack);
+headGroup.add(S(0.95, matHair, 0, -0.35, -0.3, 0.95, 0.92, 0.72));   // back volume
+
+// side locks framing the face
+const lockL = S(1, matHair, -0.92, -0.45, 0.12, 0.3, 0.95, 0.5);
+lockL.rotation.z = 0.08;
+const lockR = S(1, matHair, 0.92, -0.45, 0.12, 0.3, 0.95, 0.5);
+lockR.rotation.z = -0.08;
+headGroup.add(lockL, lockR);
+
+// swept bangs (center part)
+const bangL = S(1, matHair, -0.42, 0.4, 0.82, 0.5, 0.16, 0.28);
+bangL.rotation.z = 0.55; bangL.rotation.y = 0.3;
+const bangR = S(1, matHair, 0.42, 0.4, 0.82, 0.5, 0.16, 0.28);
+bangR.rotation.z = -0.55; bangR.rotation.y = -0.3;
+headGroup.add(bangL, bangR);
+
+// half-up topknot with gold ring
+headGroup.add(S(0.22, matHair, 0, 1.25, -0.08));
+headGroup.add(S(0.17, matHair, 0.09, 1.13, -0.16));
+headGroup.add(S(0.15, matHair, -0.1, 1.17, -0.02));
+const goldRing = new THREE.Mesh(new THREE.TorusGeometry(0.15, 0.04, 12, 28), matGold);
+goldRing.position.set(0, 1.05, -0.05);
+goldRing.rotation.x = 1.3;
+headGroup.add(goldRing);
+
+/* ---------- Face ---------- */
+
+const eyeGroups = [];
+function makeEye(sign) {
+  const g = new THREE.Group();
+  const sclera = S(0.155, matEyeWhite, 0, 0, 0, 1, 0.85, 0.55);
+  g.add(sclera);
+  const iris = S(0.095, matIris, 0, -0.005, 0.075, 1, 1, 0.55);
+  g.add(iris);
+  const pupil = S(0.048, matPupil, 0, -0.005, 0.115, 1, 1, 0.5);
+  g.add(pupil);
+  g.add(S(0.03, matShine, -0.035, 0.05, 0.14));
+  g.add(S(0.015, matShine, 0.03, -0.04, 0.13));
+  // upper lash line
+  const lash = new THREE.Mesh(new THREE.TorusGeometry(0.15, 0.022, 10, 24, Math.PI), matBrow);
+  lash.position.set(0, 0.02, 0.1);
+  g.add(lash);
+  // winged liner
+  const wing = new THREE.Mesh(new THREE.ConeGeometry(0.028, 0.09, 8), matBrow);
+  wing.position.set(0.16 * sign, 0.06, 0.09);
+  wing.rotation.z = -1.0 * sign;
+  wing.scale.z = 0.4;
+  g.add(wing);
+  g.position.set(0.34 * sign, 0.05, 0.8);
+  g.rotation.y = 0.38 * sign;
+  headGroup.add(g);
+  eyeGroups.push(g);
+  return g;
+}
+makeEye(-1);
+makeEye(1);
+
+// straight bold eyebrows
+const browL = limb(V3(-0.46, 0.33, 0.74), V3(-0.22, 0.36, 0.8), 0.032, matBrow);
+const browR = limb(V3(0.46, 0.33, 0.74), V3(0.22, 0.36, 0.8), 0.032, matBrow);
+headGroup.add(browL, browR);
+
+// nose
+headGroup.add(S(0.07, matSkinShade, 0, -0.18, 0.9, 1, 0.85, 0.8));
+
+// bold red lips (pouty)
+headGroup.add(S(0.105, matLip, 0, -0.39, 0.86, 1.45, 0.75, 0.75));
+headGroup.add(S(0.085, matLip, 0, -0.29, 0.87, 1.3, 0.55, 0.7));
+headGroup.add(S(0.04, matLip, 0, -0.23, 0.9));
+
+// pink blush
+const blushL = S(0.15, matBlush, -0.56, -0.18, 0.74, 1, 0.7, 0.3);
+blushL.rotation.y = -0.6;
+const blushR = S(0.15, matBlush, 0.56, -0.18, 0.74, 1, 0.7, 0.3);
+blushR.rotation.y = 0.6;
+headGroup.add(blushL, blushR);
+
+/* Shadows for everything in the character */
+character.traverse(o => { if (o.isMesh) { o.castShadow = true; } });
+
+/* ============================== Interaction ============================== */
+
+function spawnCharacter(point) {
+  const clone = character.clone();
+  clone.position.copy(point).add(V3(0, 0.5, 0));
+  clone.scale.setScalar(0.5);
+  scene.add(clone);
+  setTimeout(() => {
+    scene.remove(clone);
+    clone.traverse(o => { if (o.isMesh) o.material.dispose(); });
+  }, 3000);
+}
+
+const raycaster = new THREE.Raycaster();
+const pointerNDC = new THREE.Vector2();
+let downPos = null;
+
+renderer.domElement.addEventListener('pointerdown', e => { downPos = [e.clientX, e.clientY]; });
+renderer.domElement.addEventListener('pointerup', e => {
+  if (!downPos) return;
+  const dx = e.clientX - downPos[0], dy = e.clientY - downPos[1];
+  downPos = null;
+  if (dx * dx + dy * dy > 25) return;            // it was a drag
+  pointerNDC.set((e.clientX / innerWidth) * 2 - 1, -(e.clientY / innerHeight) * 2 + 1);
+  raycaster.setFromCamera(pointerNDC, camera);
+  const hit = raycaster.intersectObject(character, true)[0];
+  if (hit) spawnCharacter(hit.point);
+});
+
+/* Buttons */
+const rotateBtn = document.getElementById('rotateBtn');
+rotateBtn.addEventListener('click', () => {
+  controls.autoRotate = !controls.autoRotate;
+  rotateBtn.textContent = controls.autoRotate ? '⏸ หยุดหมุนอัตโนมัติ' : '▶ เริ่มหมุนอัตโนมัติ';
+});
+
+document.getElementById('shotBtn').addEventListener('click', () => {
+  renderer.render(scene, camera);
+  const a = document.createElement('a');
+  a.download = 'strawberry-denim-girl-3d.png';
+  a.href = renderer.domElement.toDataURL('image/png');
+  a.click();
+});
+
+/* ============================== Animate ============================== */
+
+const clock = new THREE.Clock();
+let nextBlink = 2.5, blinkT = -1;
+let loadingCleared = false;
+
+renderer.setAnimationLoop(() => {
+  const dt = Math.min(clock.getDelta(), 0.05);
+  const t = clock.elapsedTime;
+
+  // idle life
+  character.position.y = Math.sin(t * 1.3) * 0.02;
+  headGroup.rotation.z = 0.05 + Math.sin(t * 0.6) * 0.03;
+  peaceHand.rotation.z = -0.1 + Math.sin(t * 1.8) * 0.06;
+
+  // blinking
+  if (t > nextBlink) { blinkT = 0; nextBlink = t + 2.5 + Math.random() * 3.5; }
+  if (blinkT >= 0) {
+    blinkT += dt;
+    const p = blinkT / 0.22;
+    const s = p >= 1 ? 1 : 1 - Math.sin(Math.min(p, 1) * Math.PI) * 0.92;
+    eyeGroups.forEach(g => { g.scale.y = s; });
+    if (p >= 1) { eyeGroups.forEach(g => { g.scale.y = 1; }); blinkT = -1; }
+  }
+
+  // floating hearts (now replaced by character clones)
+  // no heart animation here
+
+  controls.update();
+  renderer.render(scene, camera);
+
+  if (!loadingCleared) {
+    loadingCleared = true;
+    document.getElementById('loading').style.display = 'none';
+  }
+});
+
+window.addEventListener('resize', () => {
+  camera.aspect = innerWidth / innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth, innerHeight);
+});
+
+} catch (err) {
+  document.getElementById('loading').innerHTML =
+    '⚠️ เกิดข้อผิดพลาด: ' + err.message + '<br>ลองเปิดด้วย Chrome / Edge เวอร์ชันใหม่';
+}
+</script>
+</body>
+</html>
